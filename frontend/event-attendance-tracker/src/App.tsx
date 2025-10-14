@@ -5,6 +5,7 @@ import { NavBar } from './components/NavBar'
 import { ThemeProvider } from './components/theme_provider'
 
 import Home from './pages/Home'
+import Event from './pages/Event'
 import Events from './pages/Events'
 import List from './pages/List'
 import CheckIn from './pages/CheckIn'
@@ -22,6 +23,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/events' element={<Events />} />
+        <Route path='/event/:id' element={<Event />} />
         <Route path='/list' element={<List />} />
         <Route path='/check-in' element={<CheckIn />} />
         <Route path='/enter' element={<Enter />} />

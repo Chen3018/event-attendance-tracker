@@ -1,7 +1,7 @@
 import { EventCard } from "@/components/EventCard"
 
 export default function Events() {
-  const sample = { title: "Sample Event", date: "2023-10-01", invited: 100, checkedIn: 75 }
+  const sample = { id: 1,title: "Sample Event", date: "2023-10-01", invited: 100, checkedIn: 75 }
 
   const noCurrentText = "No ongoing event at the moment."
   const noFutureText = "No upcoming events scheduled."

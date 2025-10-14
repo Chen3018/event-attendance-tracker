@@ -9,11 +9,15 @@ import {
 } from "@/components/ui/card"
 import { Button } from "./ui/button"
 
+import { useNavigate } from "react-router-dom"
+
 export function EventCard({ text = "", event }: { text?: string, event: any }) {
+
+    const navigate = useNavigate();
 
     if (text == "") {
         return (
-            <Card className="w-full max-w-2xs hover:scale-105 transition-transform cursor-pointer">
+            <Card className="w-full max-w-2xs hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate(`/event/${event.id}`)}>
                 <CardHeader>
                     <CardTitle>{event.title}</CardTitle>
                     <CardDescription>{event.date}</CardDescription>
