@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "./ui/button"
 
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 
 export function EventCard({ type = -1, text = "", event }: { type?: number, text?: string, event: any }) {
 
@@ -53,8 +53,13 @@ export function EventCard({ type = -1, text = "", event }: { type?: number, text
 
                 <CardFooter>
                     <CardAction className="w-full space-x-2">
-                        <Button variant="secondary" className="cursor-pointer">Login</Button>
-                        <Button className="cursor-pointer">Sign Up</Button>
+                        <Button variant="secondary" className="cursor-pointer">
+                            <Link to="/login">Login</Link>
+                        </Button>
+
+                        <Button className="cursor-pointer">
+                            <Link to="/sign-up">Sign Up</Link>
+                        </Button>
                     </CardAction>
                 </CardFooter>
             </Card>
