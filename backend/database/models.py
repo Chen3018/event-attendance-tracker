@@ -6,6 +6,7 @@ class User(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name: str
     email: str
+    password_hash: str
 
     guests: list["Guests"] = Relationship(back_populates="user")
 
