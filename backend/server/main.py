@@ -77,3 +77,16 @@ def create_event(name: str, start_time: str, end_time: str):
         session.commit()
         session.refresh(event)
         return event
+    
+@app.post("/event/{event_id}")
+def add_guest(event_id: str, name: str):
+    with Session(engine) as session:
+        event = session.get(Event, event_id)
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        guest = Guest(name=name, event_id=event_id)
+        session.add(guest)
+        session.commit()
+        session.refresh(guest)
+        return guest
