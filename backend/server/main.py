@@ -64,7 +64,16 @@ def get_events_previews():
                 start_time=e[2],
                 end_time=e[3],
                 guest_invited=e[4],
-                guest_checked_in=e[5]
+                guest_checked_in=e[5] or 0
             )
             for e in result
         ]
+    
+@app.post("/events")
+def create_event(name: str, start_time: str, end_time: str):
+    with Session(engine) as session:
+        event = Event(name=name, start_time=start_time, end_time=end_time)
+        session.add(event)
+        session.commit()
+        session.refresh(event)
+        return event
