@@ -8,7 +8,7 @@ class User(SQLModel, table=True):
     email: str
     password_hash: str
 
-    guests: list["Guests"] = Relationship(back_populates="user")
+    guests: list["Guest"] = Relationship(back_populates="user")
 
 class Event(SQLModel, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
@@ -16,9 +16,9 @@ class Event(SQLModel, table=True):
     start_time: datetime
     end_time: datetime
 
-    guests: list["Guests"] = Relationship(back_populates="event")
+    guests: list["Guest"] = Relationship(back_populates="event")
 
-class Guests(SQLModel, table=True):
+class Guest(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     name : str
     checked_in: bool = Field(default=False)

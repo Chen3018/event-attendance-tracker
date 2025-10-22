@@ -1,10 +1,12 @@
 from sqlmodel import SQLModel, create_engine
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 
-from models import *
+from database.database_models import *
 
-load_dotenv()
+
+load_dotenv(override=True)
 DATABASE_URL = os.getenv("DATABASE_URL")
 engine = create_engine(DATABASE_URL)
 

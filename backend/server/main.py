@@ -1,10 +1,12 @@
 from typing import Union
 from fastapi import FastAPI, HTTPException
-from sqlmodel import Session
-import auth
+from sqlmodel import Session, select, func
+from sqlalchemy import Integer
 
-from ..database.db import engine, init_db
-from ..database.models import *
+import server.auth as auth
+from database.db import engine, init_db
+from database.database_models import *
+from server.api_models import *
 
 app = FastAPI()
 
@@ -38,3 +40,31 @@ def login(email: str, password: str):
         
         token = auth.create_access_token(data={"sub": user.email})
         return {"access_token": token, "token_type": "bearer"}
+    
+@app.get("/events", response_model=list[EventPreview])
+def get_events_previews():
+    with Session(engine) as session:
+        result = session.exec(
+            select(
+                Event.id,
+                Event.name,
+                Event.start_time,
+                Event.end_time,
+                func.count(Guest.id).label("guest_invited"),
+                func.sum(func.cast(Guest.checked_in, Integer)).label("guest_checked_in")
+            )
+            .join(Guest, isouter=True)
+            .group_by(Event.id)
+        ).all()
+
+        return [
+            EventPreview(
+                id=e[0],
+                name=e[1],
+                start_time=e[2],
+                end_time=e[3],
+                guest_invited=e[4],
+                guest_checked_in=e[5]
+            )
+            for e in result
+        ]
