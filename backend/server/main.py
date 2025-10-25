@@ -55,7 +55,7 @@ def get_current_user(token: str = Depends(auth.oauth2_scheme)):
             raise HTTPException(status_code=401, detail="User not found")
         return user
     
-@app.get("/events", response_model=list[EventPreview])
+@app.get("/events", response_model=EventList)
 def get_events_previews():
     with Session(engine) as session:
         result = session.exec(
@@ -71,7 +71,7 @@ def get_events_previews():
             .group_by(Event.id)
         ).all()
 
-        return [
+        events = [
             EventPreview(
                 id=e[0],
                 name=e[1],
@@ -82,8 +82,25 @@ def get_events_previews():
             )
             for e in result
         ]
+
+        current_event = None
+        future_events = []
+        past_events = []
+        for event in events:
+            if event.start_time <= datetime.now() <= event.end_time:
+                current_event = event
+            elif event.start_time > datetime.now():
+                future_events.append(event)
+            else:
+                past_events.append(event)
+        
+        return EventList(
+            current_event=current_event,
+            future_events=future_events,
+            past_events=past_events
+        )
     
-@app.post("/events")
+@app.post("/event")
 def create_event(name: str, start_time: str, end_time: str, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         event = Event(name=name, start_time=start_time, end_time=end_time)
@@ -92,7 +109,7 @@ def create_event(name: str, start_time: str, end_time: str, current_user: User =
         session.refresh(event)
         return event
     
-@app.post("/event/{event_id}")
+@app.post("/guest/{event_id}")
 def add_guest(event_id: str, name: str, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         event = session.get(Event, event_id)

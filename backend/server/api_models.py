@@ -13,3 +13,10 @@ class EventPreview(BaseModel):
     class Config:
         orm_mode = True
 
+class EventList(BaseModel):
+    current_event: EventPreview | None
+    future_events: list[EventPreview]
+    past_events: list[EventPreview]
+
+    class Config:
+        orm_mode = True
