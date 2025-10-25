@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, create_engine
 from dotenv import load_dotenv
 import os
-from pathlib import Path
 
 from database.database_models import *
 

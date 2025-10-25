@@ -1,5 +1,4 @@
-from typing import Union
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from sqlmodel import Session, select, func
 from sqlalchemy import Integer
 
@@ -41,6 +40,21 @@ def login(email: str, password: str):
         token = auth.create_access_token(data={"sub": user.email})
         return {"access_token": token, "token_type": "bearer"}
     
+def get_current_user(token: str = Depends(auth.oauth2_scheme)):
+    try:
+        payload = auth.decode_access_token(token.credentials)
+        email: str = payload.get("sub")
+        if email is None:
+            raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    with Session(engine) as session:
+        user = session.query(User).filter(User.email == email).first()
+        if user is None:
+            raise HTTPException(status_code=401, detail="User not found")
+        return user
+    
 @app.get("/events", response_model=list[EventPreview])
 def get_events_previews():
     with Session(engine) as session:
@@ -70,7 +84,7 @@ def get_events_previews():
         ]
     
 @app.post("/events")
-def create_event(name: str, start_time: str, end_time: str):
+def create_event(name: str, start_time: str, end_time: str, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         event = Event(name=name, start_time=start_time, end_time=end_time)
         session.add(event)
@@ -79,13 +93,13 @@ def create_event(name: str, start_time: str, end_time: str):
         return event
     
 @app.post("/event/{event_id}")
-def add_guest(event_id: str, name: str):
+def add_guest(event_id: str, name: str, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         event = session.get(Event, event_id)
         if not event:
             raise HTTPException(status_code=404, detail="Event not found")
         
-        guest = Guest(name=name, event_id=event_id)
+        guest = Guest(name=name, event_id=event_id, user_id=current_user.id)
         session.add(guest)
         session.commit()
         session.refresh(guest)
