@@ -14,7 +14,7 @@ export function NavBar() {
             <NavigationMenu>
                 <NavigationMenuList>
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/">
                                 <img src="/sn.png" alt="logo" className="h-8" />
                             </Link>
@@ -22,31 +22,31 @@ export function NavBar() {
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/events">Events</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/list">List</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/check-in">Check-In</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/enter">Enter</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>
 
                     <NavigationMenuItem>
-                        <NavigationMenuLink>
+                        <NavigationMenuLink asChild>
                             <Link to="/exit">Exit</Link>
                         </NavigationMenuLink>
                     </NavigationMenuItem>

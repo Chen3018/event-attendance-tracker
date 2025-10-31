@@ -1,3 +1,10 @@
+export type AuthContextType = {
+    token: string | null;
+    login: (token: string) => void;
+    logout: () => void;
+    isAuthenticated: boolean;
+}
+
 export type EventPreview = {
     id: string;
     name: string;

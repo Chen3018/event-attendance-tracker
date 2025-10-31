@@ -1,6 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, func
 from sqlalchemy import Integer
+from dotenv import load_dotenv
+import os
 
 import server.auth as auth
 from database.db import engine, init_db
@@ -8,6 +11,17 @@ from database.database_models import *
 from server.api_models import *
 
 app = FastAPI()
+
+load_dotenv()
+FRONTEND_URL = os.getenv("FRONTEND_URL")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[FRONTEND_URL],  # or ["*"] for testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def on_startup():
@@ -31,10 +45,10 @@ def signup(name: str, email: str, password: str):
         return {"access_token": token, "token_type": "bearer"}
     
 @app.post("/login")
-def login(email: str, password: str):
+def login(login_request: LoginRequest):
     with Session(engine) as session:
-        user = session.query(User).filter(User.email == email).first()
-        if not user or not auth.verify_password(password, user.password_hash):
+        user = session.query(User).filter(User.email == login_request.email).first()
+        if not user or not auth.verify_password(login_request.password, user.password_hash):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         token = auth.create_access_token(data={"sub": user.email})

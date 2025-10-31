@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -12,12 +14,67 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
+  FieldError,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+
+import { useAuth } from "@/context/AuthContext";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const { login } = useAuth();
+
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {}
+
+    if (!email) {
+      newErrors.email = "Email is required"
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required"
+    }
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+
+    if (!validate()) {
+      return
+    }
+
+    try {
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "email": email, "password": password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Login failed with status ${res.status} ${err}`);
+      }
+      const data = await res.json();
+
+      login(data.access_token);
+      window.location.href = "/";
+    } catch (error: any) {
+      const newErrors: { [key: string]: string } = {};
+      newErrors.login = "Invalid credentials";
+      setErrors(newErrors);
+    }
+  }
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -28,18 +85,22 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleSubmit}>
             <FieldGroup>
-              <Field>
+              <Field data-invalid={!!errors.email}>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
-                  type="email"
+                  type="text"
                   placeholder="m@example.com"
-                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  aria-invalid={!!errors.email}
                 />
+                {errors.email && <FieldError>{errors.email}</FieldError>}
               </Field>
-              <Field>
+
+              <Field data-invalid={!!errors.password}>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <a
@@ -49,8 +110,11 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} aria-invalid={!!errors.password} />
+                {errors.password && <FieldError>{errors.password}</FieldError>}
+                {errors.login && <FieldError>{errors.login}</FieldError>}
               </Field>
+              
               <Field>
                 <Button type="submit">Login</Button>
                 <FieldDescription className="text-center">

@@ -2,6 +2,10 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import uuid
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 class EventPreview(BaseModel):
     id: uuid.UUID
     name: str
