@@ -6,9 +6,13 @@ import {
 } from "@/components/ui/navigation-menu"
 import { Button } from "@/components/ui/button"
 
+import { useAuth } from "@/context/AuthContext"
+
 import { Link } from "react-router-dom"
 
 export function NavBar() {
+    const { isAuthenticated, profile, logout } = useAuth();
+
     return (
         <div className="flex justify-between">
             <NavigationMenu>
@@ -53,15 +57,21 @@ export function NavBar() {
                 </NavigationMenuList>
             </NavigationMenu>
 
-
-            <div className="flex space-x-4">
-                <Button variant="secondary">
-                    <Link to="/login">Login</Link>
-                </Button>
-                <Button>
-                    <Link to="/sign-up">Sign Up</Link>
-                </Button>
-            </div>
+            {isAuthenticated ?
+                <div className="flex items-center space-x-4">
+                    <span>Welcome, {profile?.name}</span>
+                    <Button variant="destructive" className="cursor-pointer" onClick={logout}>Logout</Button>
+                </div> 
+            :
+                <div className="flex space-x-4">
+                    <Button variant="secondary">
+                        <Link to="/login">Login</Link>
+                    </Button>
+                    <Button>
+                        <Link to="/sign-up">Sign Up</Link>
+                    </Button>
+                </div>
+            }
         </div>
     )
 }

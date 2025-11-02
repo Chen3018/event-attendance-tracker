@@ -11,6 +11,10 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
+class UserProfile(BaseModel):
+    name: str
+    email: str
+
 class EventPreview(BaseModel):
     id: uuid.UUID
     name: str

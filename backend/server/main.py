@@ -37,7 +37,7 @@ def signup(signup_request: SignUpRequest):
         name = signup_request.name
         email = signup_request.email
         password = signup_request.password
-        
+
         if session.query(User).filter(User.email == email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
 
@@ -60,7 +60,8 @@ def login(login_request: LoginRequest):
     
 def get_current_user(token: str = Depends(auth.oauth2_scheme)):
     try:
-        payload = auth.decode_access_token(token.credentials)
+        print(token)
+        payload = auth.decode_access_token(token)
         email: str = payload.get("sub")
         if email is None:
             raise HTTPException(status_code=401, detail="Invalid token")
@@ -72,6 +73,10 @@ def get_current_user(token: str = Depends(auth.oauth2_scheme)):
         if user is None:
             raise HTTPException(status_code=401, detail="User not found")
         return user
+    
+@app.get("/profile", response_model=UserProfile)
+def get_profile(current_user: User = Depends(get_current_user)):
+    return UserProfile(name=current_user.name, email=current_user.email)
     
 @app.get("/events", response_model=EventList)
 def get_events_previews():

@@ -1,16 +1,21 @@
 import React, {createContext, useContext, useState, useEffect } from "react";
 
-import type { AuthContextType } from "@/lib/types";
+import type { AuthContextType, UserProfile } from "@/lib/types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [token, setToken] = useState<string | null>(null);
+    const [profile, setProfile] = useState<UserProfile | null>(null);
 
     useEffect(() => {
         const storedToken = localStorage.getItem("access_token");
+        const storedProfile = localStorage.getItem("user_profile");
         if (storedToken) {
             setToken(storedToken);
+        }
+        if (storedProfile) {
+            setProfile(JSON.parse(storedProfile));
         }
     }, []);
 
@@ -21,11 +26,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const logout = () => {
         setToken(null);
+        setProfile(null);
         localStorage.removeItem("access_token");
+        localStorage.removeItem("user_profile");
     };
 
+    const updateProfile = (userProfile: UserProfile) => {
+        setProfile(userProfile);
+        localStorage.setItem("user_profile", JSON.stringify(userProfile));
+    }
+
     return (
-        <AuthContext.Provider value={{ token, login, logout, isAuthenticated: !!token }}>
+        <AuthContext.Provider value={{ token, login, logout, updateProfile, isAuthenticated: !!token, profile }}>
             {children}
         </AuthContext.Provider>
     );

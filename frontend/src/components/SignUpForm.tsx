@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { useAuth } from "@/context/AuthContext";
+import { apiFetch } from "@/lib/api"
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -27,7 +28,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const { login } = useAuth();
+  const { login, updateProfile } = useAuth();
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {}
@@ -77,8 +78,12 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         throw new Error(`Signup failed with status ${res.status} ${err}`);
       }
       const data = await res.json();
-
+      
       login(data.access_token);
+
+      const profile = await apiFetch("/profile");
+
+      updateProfile(profile);
       window.location.href = "/";
     } catch (error: any) {
       const newErrors: { [key: string]: string } = {};
@@ -139,7 +144,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </Field>
             <FieldGroup>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button type="submit" className="cursor-pointer">Create Account</Button>
                 <FieldDescription className="px-6 text-center">
                   Already have an account? <a href="/login">Sign in</a>
                 </FieldDescription>

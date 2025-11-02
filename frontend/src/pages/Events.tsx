@@ -1,14 +1,14 @@
 import { EventCard } from "@/components/EventCard"
 
+import { useAuth } from "@/context/AuthContext"
 import { apiFetch } from "@/lib/api"
 import type { EventList } from "@/lib/types"
 
 import { useEffect, useState } from "react"
 
 export default function Events() {
+  const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState<EventList | null>(null);
-
-  const isLoggedIn = false;
 
   const sample = { id: "1",name: "Sample Event", start_time: "2023-10-01", end_time: "2023-10-01", guest_invited: 100, guest_checked_in: 75 }
 
@@ -53,7 +53,7 @@ export default function Events() {
           {futureEvents.map((event, index) => (
             <EventCard key={index} type={0} event={event} />
           ))}
-          {isLoggedIn ? <EventCard type={1} event={sample} /> :
+          {isAuthenticated ? <EventCard type={1} event={sample} /> :
             <EventCard type={2} text={loggedOutText} event={sample} />}
         </div>
       </div>

@@ -1,8 +1,15 @@
+export type UserProfile = {
+    name: string;
+    email: string;
+}
+
 export type AuthContextType = {
     token: string | null;
     login: (token: string) => void;
     logout: () => void;
+    updateProfile: (profile: UserProfile) => void;
     isAuthenticated: boolean;
+    profile: UserProfile | null;
 }
 
 export type EventPreview = {
