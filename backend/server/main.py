@@ -32,11 +32,15 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/signup")
-def signup(name: str, email: str, password: str):
+def signup(signup_request: SignUpRequest):
     with Session(engine) as session:
+        name = signup_request.name
+        email = signup_request.email
+        password = signup_request.password
+        
         if session.query(User).filter(User.email == email).first():
             raise HTTPException(status_code=400, detail="Email already registered")
-        
+
         user = User(name=name, email=email, password_hash=auth.hash_password(password))
         session.add(user)
         session.commit()

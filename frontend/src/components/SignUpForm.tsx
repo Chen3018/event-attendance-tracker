@@ -16,12 +16,18 @@ import {
   FieldLabel,
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+
+import { useAuth } from "@/context/AuthContext";
+
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const { login } = useAuth();
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {}
@@ -52,11 +58,32 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
-    if (validate()) {
+    if (!validate()) {
+      return
+    }
 
+    try {
+      const res = await fetch(`${BASE_URL}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "name": name, "email": email, "password": password }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Signup failed with status ${res.status} ${err}`);
+      }
+      const data = await res.json();
+
+      login(data.access_token);
+      window.location.href = "/";
+    } catch (error: any) {
+      const newErrors: { [key: string]: string } = {};
+      newErrors.signup = "Signup failed. Please try again.";
+      setErrors(newErrors);
     }
   }
 
@@ -108,6 +135,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
               { errors.confirmPassword ? <FieldError>{errors.confirmPassword}</FieldError> :
                 <FieldDescription>Please confirm your password.</FieldDescription>
               }
+              {errors.signup && <FieldError>{errors.signup}</FieldError>}
             </Field>
             <FieldGroup>
               <Field>

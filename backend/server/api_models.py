@@ -2,6 +2,11 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 import uuid
 
+class SignUpRequest(BaseModel):
+    name: str
+    email: str
+    password: str
+
 class LoginRequest(BaseModel):
     email: str
     password: str
