@@ -19,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 
 import { useAuth } from "@/context/AuthContext";
-import { apiFetch } from "@/lib/api"
+import { useApi } from "@/hooks/api"
 
 const BASE_URL = import.meta.env.VITE_API_URL;
 
@@ -30,7 +30,9 @@ export function LoginForm({
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+
   const { login, updateProfile } = useAuth();
+  const { apiFetch } = useApi();
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {}

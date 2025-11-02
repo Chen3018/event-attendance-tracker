@@ -1,13 +1,15 @@
 import { EventCard } from "@/components/EventCard"
 
 import { useAuth } from "@/context/AuthContext"
-import { apiFetch } from "@/lib/api"
+import { useApi } from "@/hooks/api"
 import type { EventList } from "@/lib/types"
 
 import { useEffect, useState } from "react"
 
 export default function Events() {
   const { isAuthenticated } = useAuth();
+  const { apiFetch } = useApi();
+  
   const [events, setEvents] = useState<EventList | null>(null);
 
   const sample = { id: "1",name: "Sample Event", start_time: "2023-10-01", end_time: "2023-10-01", guest_invited: 100, guest_checked_in: 75 }
