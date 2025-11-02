@@ -1,19 +1,40 @@
 import { EventCard } from "@/components/EventCard"
 
-export default function Events() {
-  const isLoggedIn = false
+import { apiFetch } from "@/lib/api"
+import type { EventList } from "@/lib/types"
 
-  const sample = { id: 1,title: "Sample Event", date: "2023-10-01", invited: 100, checkedIn: 75 }
+import { useEffect, useState } from "react"
+
+export default function Events() {
+  const [events, setEvents] = useState<EventList | null>(null);
+
+  const isLoggedIn = false;
+
+  const sample = { id: "1",name: "Sample Event", start_time: "2023-10-01", end_time: "2023-10-01", guest_invited: 100, guest_checked_in: 75 }
 
   const noCurrentText = "No ongoing event at the moment."
   const loggedOutText = "Login or Sign Up to create new events."
   const noPastText = "No past events available."
 
-  let currentEvent = sample
-  let futureEvents = [sample, sample, sample]
-  let pastEvents = [sample, sample, sample, sample]
+  useEffect(() => {
+    async function fetchEvents() {
+      try {
+        const data = await apiFetch("/events");
 
-  const isCurrent = false
+        setEvents(data);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      }
+    }
+
+    fetchEvents();
+  }, []);
+
+  let currentEvent = events?.current_event || null
+  let futureEvents = events?.future_events || []
+  let pastEvents = events?.past_events || []
+
+  const isCurrent = currentEvent !== null
   const isPast = pastEvents.length > 0
 
   return (
@@ -21,8 +42,8 @@ export default function Events() {
       <div className="pt-8 pb-5">
         <h2 className="flex text-3xl font-semibold pb-5">Current Event</h2>
         <div className="flex gap-4 flex-wrap">
-          {isCurrent ? <EventCard type={0} event={sample} /> :
-            <EventCard text={noCurrentText} event={currentEvent} />}
+          {isCurrent ? <EventCard type={0} event={currentEvent} /> :
+            <EventCard text={noCurrentText} event={sample} />}
         </div>
       </div>
 

@@ -9,23 +9,28 @@ import {
 } from "@/components/ui/card"
 import { Button } from "./ui/button"
 
+import type { EventPreview } from "@/lib/types";
+
 import { useNavigate, Link } from "react-router-dom"
 
-export function EventCard({ type = -1, text = "", event }: { type?: number, text?: string, event: any }) {
+export function EventCard({ type = -1, text = "", event }: { type?: number, text?: string, event: EventPreview }) {
 
     const navigate = useNavigate();
 
     if (type == 0) {
+        const time = event.start_time;
+        const date = new Date(time).toLocaleDateString();
+        
         return (
             <Card className="w-full max-w-2xs hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate(`/event/${event.id}`)}>
                 <CardHeader>
-                    <CardTitle>{event.title}</CardTitle>
-                    <CardDescription>{event.date}</CardDescription>
+                    <CardTitle>{event.name}</CardTitle>
+                    <CardDescription>{date}</CardDescription>
                 </CardHeader>
 
                 <CardContent>
-                    <p>Guests Invited: {event.invited} </p>
-                    <p>Guests Checked-In: {event.checkedIn}</p>
+                    <p>Guests Invited: {event.guest_invited}</p>
+                    <p>Guests Checked-In: {event.guest_checked_in}</p>
                 </CardContent>
 
                 <CardFooter>
