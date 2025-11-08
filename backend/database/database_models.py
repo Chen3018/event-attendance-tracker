@@ -19,7 +19,7 @@ class Event(SQLModel, table=True):
     guests: list["Guest"] = Relationship(back_populates="event")
 
 class Guest(SQLModel, table=True):
-    id: int | None = Field(default=None, primary_key=True)
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
     name : str
     checked_in: bool = Field(default=False)
     event_id: uuid.UUID = Field(foreign_key="event.id")

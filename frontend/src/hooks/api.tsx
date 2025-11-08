@@ -9,8 +9,6 @@ export function useApi() {
 
     const apiFetch = async (url: string, options: RequestInit = {}) => {
         const token = localStorage.getItem("access_token");
-
-        console.log("API Fetch called with token:", token);
     
         const res = await fetch(`${BASE_URL}${url}`, {
             ...options,

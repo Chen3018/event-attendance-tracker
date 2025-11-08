@@ -144,3 +144,36 @@ def add_guest(event_id: str, name: str, current_user: User = Depends(get_current
         session.commit()
         session.refresh(guest)
         return guest
+
+@app.get("/event/{event_id}", response_model=EventDetails)
+def get_event_details(event_id: str):
+    with Session(engine) as session:
+        event = session.get(Event, uuid.UUID(event_id))
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        guest_list_items = []
+        guests = session.exec(select(Guest).where(Guest.event_id == event.id)).all()
+        for guest in guests:
+            invited_by_user = session.get(User, guest.user_id)
+            guest_list_items.append(
+                GuestListItem(
+                    id=guest.id,
+                    name=guest.name,
+                    invitedBy=invited_by_user.name if invited_by_user else "Unknown",
+                    checkedIn=guest.checked_in
+                )
+            )
+        
+        guest_invited = len(guests)
+        guest_checked_in = sum(1 for guest in guests if guest.checked_in)
+
+        return EventDetails(
+            id=event.id,
+            name=event.name,
+            start_time=event.start_time,
+            end_time=event.end_time,
+            guest_invited=guest_invited,
+            guest_checked_in=guest_checked_in,
+            guestList=guest_list_items
+        )

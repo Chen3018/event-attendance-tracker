@@ -26,3 +26,20 @@ export type EventList = {
     future_events: EventPreview[];
     past_events: EventPreview[];
 }
+
+export type GuestListItem = {
+    id: string;
+    name: string;
+    invitedBy: string;
+    checkedIn: boolean;
+}
+
+export type EventDetails = {
+    id: string;
+    name: string;
+    start_time: string;
+    end_time: string;
+    guest_invited: number;
+    guest_checked_in: number;
+    guestList: GuestListItem[];
+}

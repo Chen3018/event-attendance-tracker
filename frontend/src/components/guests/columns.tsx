@@ -10,14 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-export type Guest = {
-    id : string
-    name: string
-    invitedBy: string
-    checkedIn: boolean
-}
+import type { GuestListItem } from "@/lib/types"
 
-export const columns: ColumnDef<Guest>[] = [
+export const columns: ColumnDef<GuestListItem>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {

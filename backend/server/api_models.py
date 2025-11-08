@@ -31,5 +31,20 @@ class EventList(BaseModel):
     future_events: list[EventPreview]
     past_events: list[EventPreview]
 
+class GuestListItem(BaseModel):
+    id: uuid.UUID
+    name: str
+    invitedBy: str
+    checkedIn: bool
+
     class Config:
         orm_mode = True
+
+class EventDetails(BaseModel):
+    id: uuid.UUID
+    name: str
+    start_time: datetime
+    end_time: datetime
+    guest_invited: int
+    guest_checked_in: int
+    guestList: list[GuestListItem]
