@@ -1,6 +1,8 @@
 import './App.css'
 import { Routes, Route } from 'react-router-dom'
 
+import { Toaster } from '@/components/ui/sonner'
+
 import { NavBar } from './components/NavBar'
 import { ThemeProvider } from './components/theme_provider'
 
@@ -20,6 +22,9 @@ function App() {
       <div className="flex flex-col">
         <NavBar />
       </div>
+
+      <Toaster position="top-center" />
+
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/events' element={<Events />} />

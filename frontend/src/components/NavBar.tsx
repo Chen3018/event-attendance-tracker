@@ -64,10 +64,10 @@ export function NavBar() {
                 </div> 
             :
                 <div className="flex space-x-4">
-                    <Button variant="secondary">
+                    <Button variant="secondary" asChild>
                         <Link to="/login">Login</Link>
                     </Button>
-                    <Button>
+                    <Button asChild>
                         <Link to="/sign-up">Sign Up</Link>
                     </Button>
                 </div>

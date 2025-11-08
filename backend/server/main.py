@@ -133,17 +133,18 @@ def create_event(name: str, start_time: str, end_time: str, current_user: User =
         return event
     
 @app.post("/guest/{event_id}")
-def add_guest(event_id: str, name: str, current_user: User = Depends(get_current_user)):
+def add_guests(event_id: str, names: list[str], current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
         event = session.get(Event, event_id)
         if not event:
             raise HTTPException(status_code=404, detail="Event not found")
         
-        guest = Guest(name=name, event_id=event_id, user_id=current_user.id)
-        session.add(guest)
-        session.commit()
-        session.refresh(guest)
-        return guest
+        for name in names:
+            guest = Guest(name=name, event_id=event_id, user_id=current_user.id)
+            session.add(guest)
+            session.commit()
+
+        return {"detail": "Guests added successfully"}
 
 @app.get("/event/{event_id}", response_model=EventDetails)
 def get_event_details(event_id: str):

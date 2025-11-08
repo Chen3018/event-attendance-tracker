@@ -58,11 +58,11 @@ export function EventCard({ type = -1, text = "", event }: { type?: number, text
 
                 <CardFooter>
                     <CardAction className="w-full space-x-2">
-                        <Button variant="secondary" className="cursor-pointer">
+                        <Button variant="secondary" asChild>
                             <Link to="/login">Login</Link>
                         </Button>
 
-                        <Button className="cursor-pointer">
+                        <Button asChild>
                             <Link to="/sign-up">Sign Up</Link>
                         </Button>
                     </CardAction>
