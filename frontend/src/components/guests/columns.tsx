@@ -12,7 +12,7 @@ import {
 
 import type { GuestListItem } from "@/lib/types"
 
-export const columns: ColumnDef<GuestListItem>[] = [
+export const columns = (handleRemoveGuest: (guestId: string) => void): ColumnDef<GuestListItem>[] => [
     {
         accessorKey: "name",
         header: ({ column }) => {
@@ -63,7 +63,7 @@ export const columns: ColumnDef<GuestListItem>[] = [
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuItem variant="destructive" onClick={() => {}}>Remove Guest</DropdownMenuItem>
+                    <DropdownMenuItem variant="destructive" onClick={() => handleRemoveGuest(guest.id)}>Remove Guest</DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
             )

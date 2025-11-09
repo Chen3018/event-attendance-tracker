@@ -74,6 +74,17 @@ export default function Event() {
     })
   }
 
+  async function handleRemoveGuest(guestId: string){
+    await apiFetch(`/guest/${guestId}`, {
+        method: 'DELETE',
+    }).then(() => {
+        toast.success("Guest removed successfully");
+        getList(id!).then(setEvent);
+    }).catch((_) => {
+        toast.error("Failed to remove guest");
+    })
+  }
+
   return (
     <div className="max-w-[95rem] mx-auto pt-8">
       <h2 className="flex text-3xl font-semibold pb-5">{event?.name}</h2>
@@ -129,7 +140,7 @@ export default function Event() {
         }
       </Sheet>
 
-      <DataTable columns={columns} data={event?.guestList || []} />
+      <DataTable columns={columns(handleRemoveGuest)} data={event?.guestList || []} />
     </div>
   )
 }

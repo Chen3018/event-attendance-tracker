@@ -178,3 +178,17 @@ def get_event_details(event_id: str):
             guest_checked_in=guest_checked_in,
             guestList=guest_list_items
         )
+    
+@app.delete("/guest/{guest_id}")
+def delete_guest(guest_id: str, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        guest = session.get(Guest, guest_id)
+        if not guest:
+            raise HTTPException(status_code=404, detail="Guest not found")
+        
+        if guest.user_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized to delete this guest")
+        
+        session.delete(guest)
+        session.commit()
+        return {"detail": "Guest deleted successfully"}
