@@ -17,8 +17,8 @@ import {
   SheetClose
 } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 
 import { useApi } from '@/hooks/api'
 import { useAuth } from '@/context/AuthContext'
@@ -94,8 +94,8 @@ export default function Event() {
 
           <div className="grid flex-1 auto-rows-min gap-6 px-4">
             <div className="grid gap-3">
-              <Label htmlFor="sheet-demo-name">Guests</Label>
-              <Input id="sheet-demo-name" value={guestNames} onChange={(e) => setGuestNames(e.target.value)} />
+              <Label htmlFor="guest_names">Guests</Label>
+              <Textarea id="guest_names" value={guestNames} onChange={(e) => setGuestNames(e.target.value)} className='resize-none h-32'/>
             </div>
           </div>
 
