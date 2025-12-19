@@ -117,6 +117,9 @@ def get_events_previews():
             else:
                 past_events.append(event)
         
+        past_events.sort(key=lambda e: e.start_time, reverse=True)
+        future_events.sort(key=lambda e: e.start_time)
+
         return EventList(
             current_event=current_event,
             future_events=future_events,
@@ -124,9 +127,9 @@ def get_events_previews():
         )
     
 @app.post("/event")
-def create_event(name: str, start_time: str, end_time: str, current_user: User = Depends(get_current_user)):
+def create_event(event_create_request: EventCreateRequest, current_user: User = Depends(get_current_user)):
     with Session(engine) as session:
-        event = Event(name=name, start_time=start_time, end_time=end_time)
+        event = Event(name=event_create_request.name, start_time=event_create_request.start_time, end_time=event_create_request.end_time)
         session.add(event)
         session.commit()
         session.refresh(event)

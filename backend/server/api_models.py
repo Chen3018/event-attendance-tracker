@@ -48,3 +48,8 @@ class EventDetails(BaseModel):
     guest_invited: int
     guest_checked_in: int
     guestList: list[GuestListItem]
+
+class EventCreateRequest(BaseModel):
+    name: str
+    start_time: datetime
+    end_time: datetime

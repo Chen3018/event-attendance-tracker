@@ -18,17 +18,17 @@ export default function Events() {
   const loggedOutText = "Login or Sign Up to create new events."
   const noPastText = "No past events available."
 
-  useEffect(() => {
-    async function fetchEvents() {
-      try {
-        const data = await apiFetch("/events");
+  async function fetchEvents() {
+    try {
+      const data = await apiFetch("/events");
 
-        setEvents(data);
-      } catch (error) {
-        console.error("Failed to fetch events:", error);
-      }
+      setEvents(data);
+    } catch (error) {
+      console.error("Failed to fetch events:", error);
     }
+  }
 
+  useEffect(() => {
     fetchEvents();
   }, []);
 
@@ -55,7 +55,7 @@ export default function Events() {
           {futureEvents.map((event, index) => (
             <EventCard key={index} type={0} event={event} />
           ))}
-          {isAuthenticated ? <EventCard type={1} event={sample} /> :
+          {isAuthenticated ? <EventCard type={1} event={sample} updateEvents={fetchEvents} /> :
             <EventCard type={2} text={loggedOutText} event={sample} />}
         </div>
       </div>

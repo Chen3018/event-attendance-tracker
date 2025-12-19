@@ -43,3 +43,9 @@ export type EventDetails = {
     guest_checked_in: number;
     guestList: GuestListItem[];
 }
+
+export type EventCreateRequest = {
+    name: string;
+    start_time: string;
+    end_time: string;
+}

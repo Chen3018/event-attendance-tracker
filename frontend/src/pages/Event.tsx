@@ -55,7 +55,6 @@ export default function Event() {
         invalidNames.push(name)
       }
     }
-    console.log(validNames);
 
     if (invalidNames.length > 0) {
       toast.error(`Please provide full names for guests: ${invalidNames.join(', ')}`);
