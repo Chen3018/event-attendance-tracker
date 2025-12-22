@@ -53,3 +53,15 @@ class EventCreateRequest(BaseModel):
     name: str
     start_time: datetime
     end_time: datetime
+
+class EventCounter(BaseModel):
+    id: uuid.UUID
+    name: str
+    start_time: datetime
+    end_time: datetime
+    guest_entered: int
+    guest_left: int
+
+class HomeContent(BaseModel):
+    current_event: EventCounter | None
+    next_event: EventCounter | None

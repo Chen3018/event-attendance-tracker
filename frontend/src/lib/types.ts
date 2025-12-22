@@ -49,3 +49,17 @@ export type EventCreateRequest = {
     start_time: string;
     end_time: string;
 }
+
+export type EventCounter = {
+    id: string;
+    name: string;
+    start_time: string;
+    end_time: string;
+    guest_entered: number;
+    guest_left: number;
+}
+
+export type HomeContent = {
+    current_event: EventCounter | null;
+    next_event: EventCounter | null;
+}

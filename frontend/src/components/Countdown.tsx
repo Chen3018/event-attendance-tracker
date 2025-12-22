@@ -83,7 +83,7 @@ export function Countdown({ end_time }: { end_time: string }) {
     }
 
     return (
-        <section className=" flex items-center justify-center p-4">
+        <section className=" flex items-center justify-center">
             <div className="flex w-full max-w-2xl items-center">
                 <CountdownItem unit="Day" label="Days" />
                 <CountdownItem unit="Hour" label="Hours" />

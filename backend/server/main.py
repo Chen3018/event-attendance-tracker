@@ -60,7 +60,6 @@ def login(login_request: LoginRequest):
     
 def get_current_user(token: str = Depends(auth.oauth2_scheme)):
     try:
-        print(token)
         payload = auth.decode_access_token(token)
         email: str = payload.get("sub")
         if email is None:
@@ -195,3 +194,60 @@ def delete_guest(guest_id: str, current_user: User = Depends(get_current_user)):
         session.delete(guest)
         session.commit()
         return {"detail": "Guest deleted successfully"}
+    
+@app.get("/home", response_model=HomeContent)
+def get_home_content():
+    with Session(engine) as session:
+        current = session.exec(
+            select(
+                Event.id,
+                Event.name,
+                Event.start_time,
+                Event.end_time,
+                Event.guest_entered,
+                Event.guest_left
+            )
+            .where(
+                Event.start_time <= datetime.now(),
+                Event.end_time >= datetime.now()
+            )
+        ).first()
+
+        next = session.exec(
+            select(
+                Event.id,
+                Event.name,
+                Event.start_time,
+                Event.end_time,
+                Event.guest_entered,
+                Event.guest_left
+            )
+            .where(Event.start_time > datetime.now())
+            .order_by(Event.start_time)
+        ).first()
+
+        current_event = None
+        if current:
+            current_event = EventCounter(
+                id=current[0],
+                name=current[1],
+                start_time=current[2],
+                end_time=current[3],
+                guest_entered=current[4],
+                guest_left=current[5]
+            )
+        next_event = None
+        if next:
+            next_event = EventCounter(
+                id=next[0],
+                name=next[1],
+                start_time=next[2],
+                end_time=next[3],
+                guest_entered=next[4],
+                guest_left=next[5]
+            )
+        
+        return HomeContent(
+            current_event=current_event,
+            next_event=next_event
+        )
