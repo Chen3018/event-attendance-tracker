@@ -23,6 +23,7 @@ export default function Home() {
 
   useEffect(() => {
     let interval: number | undefined;
+    fetchHomeContent();
 
     function start() {
       interval = setInterval(fetchHomeContent, 5000);
@@ -32,15 +33,17 @@ export default function Home() {
       clearInterval(interval);
     }
 
-    document.addEventListener("visibilitychange", () => {
-      if (document.hidden) {
-        stop();
-      } else {
-        start();
-      }
-    });
+    if (events?.current_event) {
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stop();
+        } else {
+          start();
+        }
+      });
 
-    start();
+      start();
+    }
     return stop;
   }, []);
 
@@ -57,12 +60,12 @@ export default function Home() {
           </div> 
           :
           events?.next_event ?
-          <div>
+          <div className="p-5">
             <div className="text-3xl">Next event: {events.next_event.name}</div>
             <Countdown end_time={events.next_event.end_time} />
           </div>
           :
-          <div className="text-3xl">No events planned, create one in the Events page</div>
+          <div className="text-3xl p-5">No events planned, create one in the Events page</div>
         }
       </div>
   )

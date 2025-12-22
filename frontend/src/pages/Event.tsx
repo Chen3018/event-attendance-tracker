@@ -84,60 +84,75 @@ export default function Event() {
     })
   }
 
+  async function handleDeleteEvent(){
+    await apiFetch(`/event/${id}`, {
+        method: 'DELETE',
+    }).then(() => {
+        window.location.href = "/events";
+        toast.success("Event deleted successfully");
+    }).catch((_) => {
+        toast.error("Failed to delete event");
+    })
+  }
+
   return (
     <div className="max-w-[95rem] mx-auto pt-8">
       <h2 className="flex text-3xl font-semibold pb-5">{event?.name}</h2>
 
-      <Sheet>
-        <SheetTrigger asChild className='flex cursor-pointer mb-4'>
-          <Button size="lg">Add guests</Button>
-        </SheetTrigger>
+      <div className='flex justify-between'>
+        <Sheet>
+          <SheetTrigger asChild className='flex cursor-pointer mb-4'>
+            <Button size="lg">Add guests</Button>
+          </SheetTrigger>
 
-        {isAuthenticated ?
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Adding Guests</SheetTitle>
-            <SheetDescription>
-              Please add the full names of the guests, as shown on their ID (school or state), you would like to invite to this event. Separate multiple names with commas.
-            </SheetDescription>
-          </SheetHeader>
+          {isAuthenticated ?
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Adding Guests</SheetTitle>
+              <SheetDescription>
+                Please add the full names of the guests, as shown on their ID (school or state), you would like to invite to this event. Separate multiple names with commas.
+              </SheetDescription>
+            </SheetHeader>
 
-          <div className="grid flex-1 auto-rows-min gap-6 px-4">
-            <div className="grid gap-3">
-              <Label htmlFor="guest_names">Guests</Label>
-              <Textarea id="guest_names" value={guestNames} onChange={(e) => setGuestNames(e.target.value)} className='resize-none h-32'/>
+            <div className="grid flex-1 auto-rows-min gap-6 px-4">
+              <div className="grid gap-3">
+                <Label htmlFor="guest_names">Guests</Label>
+                <Textarea id="guest_names" value={guestNames} onChange={(e) => setGuestNames(e.target.value)} className='resize-none h-32'/>
+              </div>
             </div>
-          </div>
 
-          <SheetFooter>
-            <SheetClose asChild>
-              <Button type="submit" onClick={handleAddGuests}>Submit</Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button variant="outline">Close</Button>
-            </SheetClose>
-          </SheetFooter>
-        </SheetContent>
-        :
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>Adding Guests</SheetTitle>
-            <SheetDescription>
-              Please first login or sign up to add guests to this event.
-            </SheetDescription>
-          </SheetHeader>
+            <SheetFooter>
+              <SheetClose asChild>
+                <Button type="submit" onClick={handleAddGuests}>Submit</Button>
+              </SheetClose>
+              <SheetClose asChild>
+                <Button variant="outline">Close</Button>
+              </SheetClose>
+            </SheetFooter>
+          </SheetContent>
+          :
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>Adding Guests</SheetTitle>
+              <SheetDescription>
+                Please first login or sign up to add guests to this event.
+              </SheetDescription>
+            </SheetHeader>
 
-          <SheetFooter>
-            <Button asChild>
-              <Link to="/sign-up">Sign Up</Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link to="/login">Login</Link>
-            </Button>
-          </SheetFooter>
-        </SheetContent>
-        }
-      </Sheet>
+            <SheetFooter>
+              <Button asChild>
+                <Link to="/sign-up">Sign Up</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link to="/login">Login</Link>
+              </Button>
+            </SheetFooter>
+          </SheetContent>
+          }
+        </Sheet>
+
+        <Button className="cursor-pointer" size="lg" variant="destructive" onClick={handleDeleteEvent}>Delete event</Button>
+      </div>
 
       <DataTable columns={columns(handleRemoveGuest)} data={event?.guestList || []} />
     </div>

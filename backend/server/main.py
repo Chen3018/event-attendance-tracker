@@ -251,3 +251,24 @@ def get_home_content():
             current_event=current_event,
             next_event=next_event
         )
+
+@app.delete("/event/{event_id}")
+def delete_event(event_id: str, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        event = session.get(Event, event_id)
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        guests = session.exec(select(Guest).where(Guest.event_id == event.id)).all()
+        for guest in guests:
+            session.delete(guest)
+
+        changes = session.exec(
+            select(AttendanceLog).where(AttendanceLog.event_id == event.id)
+        ).all()
+        for log in changes:
+            session.delete(log)
+        
+        session.delete(event)
+        session.commit()
+        return {"detail": "Event and associated guests deleted successfully"}
