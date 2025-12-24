@@ -65,3 +65,6 @@ class EventCounter(BaseModel):
 class HomeContent(BaseModel):
     current_event: EventCounter | None
     next_event: EventCounter | None
+
+class CheckInRequest(BaseModel):
+    name: str

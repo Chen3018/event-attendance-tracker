@@ -272,3 +272,34 @@ def delete_event(event_id: str, current_user: User = Depends(get_current_user)):
         session.delete(event)
         session.commit()
         return {"detail": "Event and associated guests deleted successfully"}
+    
+@app.post("/checkin/{event_id}")
+def check_in_guest(event_id: str, checkin_request: CheckInRequest, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        name = checkin_request.name
+        event = session.get(Event, uuid.UUID(event_id))
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        guest = session.exec(
+            select(Guest)
+            .where(Guest.event_id == event.id, Guest.name == name)
+        ).first()
+        if not guest:
+            raise HTTPException(status_code=404, detail="Guest not found for this event")
+        
+        if guest.checked_in:
+            raise HTTPException(status_code=400, detail="Guest already checked in")
+        
+        guest.checked_in = True
+        event.guest_entered += 1
+
+        log = AttendanceLog(
+            event_id=event.id,
+            delta=1,
+            timestamp=datetime.now()
+        )
+        session.add(log)
+
+        session.commit()
+        return {"detail": f"Guest {name} checked in successfully"}

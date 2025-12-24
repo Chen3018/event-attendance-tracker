@@ -9,10 +9,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Checkbox } from "@/components/ui/checkbox"
 
 import type { GuestListItem } from "@/lib/types"
 
-export const columns = (handleRemoveGuest: (guestId: string) => void): ColumnDef<GuestListItem>[] => [
+export const columns = (handleRemoveGuest: (guestId: string) => void, handleCheckIn: (guestName: string) => void, startTime: string, endTime: string): ColumnDef<GuestListItem>[] => [
     {
         accessorKey: "name",
         header: ({ column }) => {
@@ -46,7 +47,12 @@ export const columns = (handleRemoveGuest: (guestId: string) => void): ColumnDef
     {
         accessorKey: "checkedIn",
         header: () => <div className="text-center">Checked In</div>,
-        cell: ({ row }) => (row.getValue("checkedIn") ? <div className="flex justify-center"><Check /></div> : <span></span>),
+        cell: ({ row }) => 
+            (row.getValue("checkedIn") ? 
+            <div className="flex justify-center"><Check /></div> 
+            : startTime && endTime && startTime <= new Date().toISOString() && new Date().toISOString() <= endTime ?
+            <div className="flex justify-center"><Checkbox onCheckedChange={(_) => handleCheckIn(row.getValue("name"))}/></div>
+            : <span></span>),
     },
     {
         id: "actions",

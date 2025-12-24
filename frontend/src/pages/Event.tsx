@@ -63,7 +63,6 @@ export default function Event() {
     if (validNames.length === 0) {
       return;
     }
-
     await apiFetch(`/guest/${id}`, {
       method: 'POST',
       body: JSON.stringify(validNames),
@@ -92,6 +91,18 @@ export default function Event() {
         toast.success("Event deleted successfully");
     }).catch((_) => {
         toast.error("Failed to delete event");
+    })
+  }
+
+  async function handleCheckIn(guestName: string){
+    await apiFetch(`/checkin/${id}`, {
+        method: 'POST',
+        body: JSON.stringify({ name: guestName }),
+    }).then(() => {
+        toast.success(`${guestName} checked in successfully`);
+        getList(id!).then(setEvent);
+    }).catch((_) => {
+        toast.error(`Failed to check in ${guestName}`);
     })
   }
 
@@ -154,7 +165,7 @@ export default function Event() {
         <Button className="cursor-pointer" size="lg" variant="destructive" onClick={handleDeleteEvent}>Delete event</Button>
       </div>
 
-      <DataTable columns={columns(handleRemoveGuest)} data={event?.guestList || []} />
+      <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
     </div>
   )
 }
