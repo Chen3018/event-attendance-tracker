@@ -15,6 +15,7 @@ import Enter from './pages/Enter'
 import Exit from './pages/Exit'
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
+import NotFound from './pages/NotFound'
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path='/exit' element={<Exit />} />
         <Route path='/login' element={<Login />} />
         <Route path='/sign-up' element={<SignUp />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </ThemeProvider>
   )

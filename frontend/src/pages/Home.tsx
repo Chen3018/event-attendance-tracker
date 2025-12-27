@@ -49,7 +49,7 @@ export default function Home() {
 
   return (
       <div>
-        <h1 className="text-5xl font-extrabold">Event Attendance Tracker</h1>
+        <h1 className="text-5xl font-extrabold py-2">Event Attendance Tracker</h1>
 
         { events?.current_event ?
           <div className="p-5">
