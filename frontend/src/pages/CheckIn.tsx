@@ -1,5 +1,6 @@
 import { columns } from "@/components/guests/columns";
 import { DataTable } from "@/components/guests/data-table";
+import { CameraCanvas } from "@/components/CameraCanvas";
 
 import { toast } from "sonner";
 
@@ -55,25 +56,26 @@ export default function CheckIn() {
     fetchHomeContent();
   }, []);
 
-  async function handlePhoto(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file || !event) return;
-
-    const imageUrl = URL.createObjectURL(file);
+  function handlePhoto(blob: Blob) {
+    const imageUrl = URL.createObjectURL(blob);
     setImagePreview(imageUrl);
 
     const formData = new FormData();
-    formData.append("photo", file);
+    formData.append("photo", blob, "photo.jpg");
   }
 
   return (
       <div className="p-5">
       { event ? 
-        <div>
-          <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
-
-          <input type="file" accept="image/*" capture="environment" onChange={handlePhoto}/>
-          <img src={imagePreview || ""} alt="Image Preview" className="mt-4 max-w-xs"/>
+        <div className="flex">
+          <div className="flex-1 min-w-0">
+            <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
+          </div>
+        
+          <CameraCanvas onCapture={handlePhoto} />
+          {imagePreview && (
+            <img src={imagePreview} alt="Captured"/>
+          )}
         </div>
         :
         <div className="text-3xl">No ongoing event.</div>
