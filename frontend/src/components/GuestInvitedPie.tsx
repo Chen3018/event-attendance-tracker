@@ -1,7 +1,6 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 import { Pie, PieChart } from 'recharts'
-import { TrendingUp } from 'lucide-react'
 
 import type { GuestsInvited } from '@/lib/types'
 import type { ChartConfig } from '@/components/ui/chart'
