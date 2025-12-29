@@ -1,9 +1,13 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI, HTTPException, Depends, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select, func
 from sqlalchemy import Integer
 from dotenv import load_dotenv
 import os
+from PIL import Image
+import numpy as np
+import pytesseract
+import cv2
 
 import server.auth as auth
 from database.db import engine, init_db
@@ -303,3 +307,46 @@ def check_in_guest(event_id: str, checkin_request: CheckInRequest, current_user:
 
         session.commit()
         return {"detail": f"Guest {name} checked in successfully"}
+    
+@app.post("/checkin/id/{event_id}")
+def check_in_guest_by_id(event_id: str, id_photo: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        event = session.get(Event, uuid.UUID(event_id))
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        image = Image.open(id_photo.file)
+
+        image = np.array(image)
+        red_channel = image[:, :, 0]
+        _, image = cv2.threshold(red_channel, 160, 255, cv2.THRESH_BINARY)
+        text = pytesseract.image_to_string(image)
+
+        lines = text.split("\n")
+        name = ""
+        if len(lines) > 0:
+            name = lines[0].strip()
+        
+        guest = session.exec(
+            select(Guest)
+            .where(Guest.event_id == event.id, Guest.name == name)
+        ).first()
+        if not guest:
+            raise HTTPException(status_code=404, detail="Guest not found for this event")
+        
+        if guest.checked_in:
+            raise HTTPException(status_code=400, detail="Guest already checked in")
+        
+        guest.checked_in = True
+        event.guest_entered += 1
+
+        log = AttendanceLog(
+            event_id=event.id,
+            delta=1,
+            timestamp=datetime.now()
+        )
+        session.add(log)
+
+        session.commit()
+        return {"detail": f"Guest {name} checked in successfully"}
+        

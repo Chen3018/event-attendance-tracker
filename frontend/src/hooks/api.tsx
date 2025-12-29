@@ -10,11 +10,18 @@ export function useApi() {
     const apiFetch = async (url: string, options: RequestInit = {}) => {
         const token = localStorage.getItem("access_token");
     
+        var headers: HeadersInit = {};
+        if (options.body && !(options.body instanceof FormData)) {
+            headers["Content-Type"] = "application/json";
+        }
+        if (token) {
+            headers["Authorization"] = `Bearer ${token}`;
+        }
+            
         const res = await fetch(`${BASE_URL}${url}`, {
             ...options,
             headers: {
-                "Content-Type": "application/json",
-                ...(token ? { "Authorization": `Bearer ${token}` } : {}),
+                ...headers,
                 ...options.headers,
             },
         });

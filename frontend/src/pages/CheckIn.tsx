@@ -61,7 +61,17 @@ export default function CheckIn() {
     setImagePreview(imageUrl);
 
     const formData = new FormData();
-    formData.append("photo", blob, "photo.jpg");
+    formData.append("id_photo", blob, "photo.jpg");
+
+    apiFetch(`/checkin/id/${event?.id}`, {
+      method: 'POST',
+      body: formData,
+    }).then(() => {
+      toast.success(`Photo check-in successful`);
+      fetchHomeContent();
+    }).catch((_) => {
+      toast.error(`Photo check-in failed`);
+    });
   }
 
   return (
