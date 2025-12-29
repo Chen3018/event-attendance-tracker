@@ -349,4 +349,23 @@ def check_in_guest_by_id(event_id: str, id_photo: UploadFile = File(...), curren
 
         session.commit()
         return {"detail": f"Guest {name} checked in successfully"}
+    
+@app.post("/enter/{event_id}")
+def increment_guest_entered(event_id: str, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        event = session.get(Event, uuid.UUID(event_id))
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        event.guest_entered += 1
+
+        log = AttendanceLog(
+            event_id=event.id,
+            delta=1,
+            timestamp=datetime.now()
+        )
+        session.add(log)
+
+        session.commit()
+        return {"detail": "Guest entered count incremented successfully"}
         

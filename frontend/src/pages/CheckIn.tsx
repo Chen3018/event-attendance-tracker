@@ -1,6 +1,7 @@
 import { columns } from "@/components/guests/columns";
 import { DataTable } from "@/components/guests/data-table";
 import { CameraCanvas } from "@/components/CameraCanvas";
+import { Button } from "@/components/ui/button";
 
 import { toast } from "sonner";
 
@@ -66,12 +67,23 @@ export default function CheckIn() {
     apiFetch(`/checkin/id/${event?.id}`, {
       method: 'POST',
       body: formData,
-    }).then(() => {
-      toast.success(`Photo check-in successful`);
+    }).then((result) => {
+      toast.success(result.detail);
       fetchHomeContent();
     }).catch((_) => {
       toast.error(`Photo check-in failed`);
     });
+  }
+
+  async function handleIncrementEntered(){
+    await apiFetch(`/enter/${event?.id}`, {
+        method: 'POST',
+    }).then(() => {
+        toast.success(`Incremented entered count by 1`);
+        fetchHomeContent();
+    }).catch((_) => {
+        toast.error(`Failed to increment entered count`);
+    })
   }
 
   return (
@@ -80,6 +92,10 @@ export default function CheckIn() {
         <div className="flex">
           <div className="flex-1 min-w-0">
             <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
+            <div className="flex gap-2 cursor-">
+              <div className="text-left text-lg">Entered (Already Checked In):</div>
+              <Button onClick={handleIncrementEntered}>+1</Button>
+            </div>
           </div>
         
           <CameraCanvas onCapture={handlePhoto} />
