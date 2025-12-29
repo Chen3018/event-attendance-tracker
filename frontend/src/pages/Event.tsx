@@ -2,9 +2,10 @@ import { useParams, Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 
 import { columns } from '@/components/guests/columns'
-import type { EventDetails } from '@/lib/types'
+import type { EventDetails, GuestsInvited } from '@/lib/types'
 import { DataTable } from '@/components/guests/data-table'
 import { toast } from 'sonner'
+import { GuestInvitedPie } from '@/components/GuestInvitedPie'
 
 import {
   Sheet,
@@ -30,14 +31,29 @@ export default function Event() {
   const { id } = useParams<{ id: string }>()
   const [event, setEvent] = useState<EventDetails | null>(null)
   const [guestNames, setGuestNames] = useState<string>("")
+  const [guestInvited, setGuestInvited] = useState<GuestsInvited[]>([]);
 
-  function getList(id: string): Promise<EventDetails> {
-    return apiFetch(`/event/${id}`)
+  async function getList(id: string){
+    apiFetch(`/event/${id}`).then(res => {
+        setEvent(res);
+        // make guestinvited an array of {invitedBy: string, count: number}
+        const newGuestInvited: GuestsInvited[] = [];
+        for (const guest of res.guestList) {
+            const inviter = guest.invitedBy;
+            const existing = newGuestInvited.find((g: GuestsInvited) => g.invitedBy === inviter);
+            if (existing) {
+                existing.count += 1;
+            } else {
+                newGuestInvited.push({ invitedBy: inviter, count: 1 });
+            }
+        }
+        setGuestInvited(newGuestInvited);
+    });
   }
 
   useEffect(() => {
     if (id) {
-      getList(id).then(setEvent)
+      getList(id);
     }
   }, [id])
 
@@ -68,7 +84,7 @@ export default function Event() {
       body: JSON.stringify(validNames),
     }).then(() => {
       toast.success(validNames.length + ' guests added successfully', { duration: 1000 });
-      getList(id!).then(setEvent);
+      getList(id!);
     })
   }
 
@@ -77,7 +93,7 @@ export default function Event() {
         method: 'DELETE',
     }).then(() => {
         toast.success("Guest removed successfully");
-        getList(id!).then(setEvent);
+        getList(id!);
     }).catch((_) => {
         toast.error("Failed to remove guest");
     })
@@ -100,7 +116,7 @@ export default function Event() {
         body: JSON.stringify({ name: guestName }),
     }).then(() => {
         toast.success(`${guestName} checked in successfully`);
-        getList(id!).then(setEvent);
+        getList(id!);
     }).catch((_) => {
         toast.error(`Failed to check in ${guestName}`);
     })
@@ -165,7 +181,14 @@ export default function Event() {
         <Button className="cursor-pointer" size="lg" variant="destructive" onClick={handleDeleteEvent}>Delete event</Button>
       </div>
 
-      <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
+      <div className='flex'>
+        <div className='flex-1 min-w-0'>
+          <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
+        </div>
+        <div className='flex-1 min-w-0 pl-60'>
+          <GuestInvitedPie guestInvited={guestInvited} />
+        </div>
+      </div>
     </div>
   )
 }

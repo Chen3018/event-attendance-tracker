@@ -63,3 +63,8 @@ export type HomeContent = {
     current_event: EventCounter | null;
     next_event: EventCounter | null;
 }
+
+export type GuestsInvited = {
+    invitedBy: string;
+    count: number;
+}
