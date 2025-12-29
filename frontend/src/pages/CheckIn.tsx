@@ -92,9 +92,9 @@ export default function CheckIn() {
         <div className="flex">
           <div className="flex-1 min-w-0">
             <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
-            <div className="flex gap-2 cursor-">
+            <div className="flex gap-2">
               <div className="text-left text-lg">Entered (Already Checked In):</div>
-              <Button onClick={handleIncrementEntered}>+1</Button>
+              <Button onClick={handleIncrementEntered} className="cursor-pointer">+1</Button>
             </div>
           </div>
         

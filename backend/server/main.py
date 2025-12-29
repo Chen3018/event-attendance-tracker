@@ -368,4 +368,26 @@ def increment_guest_entered(event_id: str, current_user: User = Depends(get_curr
 
         session.commit()
         return {"detail": "Guest entered count incremented successfully"}
+    
+@app.post("/exit/{event_id}")
+def increment_guest_left(event_id: str, current_user: User = Depends(get_current_user)):
+    with Session(engine) as session:
+        event = session.get(Event, uuid.UUID(event_id))
+        if not event:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        if event.guest_left >= event.guest_entered:
+            raise HTTPException(status_code=400, detail="Guest left count cannot exceed guest entered count")
+        
+        event.guest_left += 1
+
+        log = AttendanceLog(
+            event_id=event.id,
+            delta=-1,
+            timestamp=datetime.now()
+        )
+        session.add(log)
+
+        session.commit()
+        return {"detail": "Guest left count incremented successfully"}
         
