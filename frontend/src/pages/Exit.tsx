@@ -43,9 +43,15 @@ export default function Exit() {
   }, []);
 
   return (
-      <div className="flex gap-2 p-2">
-        <div className="text-left text-lg">Exited:</div>
-        <Button onClick={handleIncrementExited} size="lg" className="cursor-pointer">+1</Button>
+      <div className="p-5">
+        {event ?
+        <div className="flex gap-2">
+          <div className="text-left text-lg">Exited:</div>
+          <Button onClick={handleIncrementExited} size="lg" className="cursor-pointer">+1</Button>
+        </div>
+        :
+        <div className="text-3xl">No ongoing event</div>
+        }
       </div>
   )
 }
