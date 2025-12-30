@@ -1,6 +1,5 @@
 import { columns } from "@/components/guests/columns";
 import { DataTable } from "@/components/guests/data-table";
-import { CameraCanvas } from "@/components/CameraCanvas";
 import { Button } from "@/components/ui/button";
 
 import { toast } from "sonner";
@@ -14,7 +13,6 @@ export default function CheckIn() {
   const { apiFetch } = useApi();
 
   const [event, setEvent] = useState<EventDetails | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   async function fetchHomeContent() {
     try {
@@ -56,24 +54,6 @@ export default function CheckIn() {
   useEffect(() => {
     fetchHomeContent();
   }, []);
-
-  function handlePhoto(blob: Blob) {
-    const imageUrl = URL.createObjectURL(blob);
-    setImagePreview(imageUrl);
-
-    const formData = new FormData();
-    formData.append("id_photo", blob, "photo.jpg");
-
-    apiFetch(`/checkin/id/${event?.id}`, {
-      method: 'POST',
-      body: formData,
-    }).then((result) => {
-      toast.success(result.detail);
-      fetchHomeContent();
-    }).catch((_) => {
-      toast.error(`Photo check-in failed`);
-    });
-  }
 
   async function handleIncrementEntered(){
     await apiFetch(`/enter/${event?.id}`, {
