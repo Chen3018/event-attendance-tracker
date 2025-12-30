@@ -6,6 +6,7 @@ import type { EventDetails, GuestsInvited } from '@/lib/types'
 import { DataTable } from '@/components/guests/data-table'
 import { toast } from 'sonner'
 import { GuestInvitedPie } from '@/components/GuestInvitedPie'
+import { GuestOverTime } from '@/components/GuestOverTime'
 
 import {
   Sheet,
@@ -185,8 +186,9 @@ export default function Event() {
         <div className='flex-1 min-w-0'>
           <DataTable columns={columns(handleRemoveGuest, handleCheckIn, event?.start_time || "", event?.end_time || "")} data={event?.guestList || []} />
         </div>
-        <div className='flex-1 min-w-0 pl-60'>
+        <div className='flex-1 min-w-0 pl-60 space-y-2'>
           <GuestInvitedPie guestInvited={guestInvited} />
+          <GuestOverTime eventId={id || ""} />
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 import pytesseract
 import cv2
+from datetime import datetime, timedelta
 
 import server.auth as auth
 from database.db import engine, init_db
@@ -391,3 +392,29 @@ def increment_guest_left(event_id: str, current_user: User = Depends(get_current
         session.commit()
         return {"detail": "Guest left count incremented successfully"}
         
+@app.get("/attendance_log/{event_id}", response_model=list[GuestCount])
+def get_attendance_log(event_id: str):
+    with Session(engine) as session:
+        logs = session.exec(
+            select(AttendanceLog)
+            .where(AttendanceLog.event_id == uuid.UUID(event_id))
+            .order_by(AttendanceLog.timestamp)
+        ).all()
+
+        event = session.get(Event, uuid.UUID(event_id))
+        event_start = event.start_time if event else datetime.now()
+        event_end = event.end_time if event else datetime.now()
+
+        current = 0
+        counts = [GuestCount(time=event_start.strftime("%H:%M"), count=0)]
+        # create counts every 5 min
+        log_index = 0
+        time_pointer = event_start
+        while time_pointer < event_end:
+            time_pointer += timedelta(minutes=5)
+            while log_index < len(logs) and logs[log_index].timestamp <= time_pointer:
+                current += logs[log_index].delta
+                log_index += 1
+            counts.append(GuestCount(time=time_pointer.strftime("%H:%M"), count=current))
+
+        return counts

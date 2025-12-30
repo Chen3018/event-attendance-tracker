@@ -68,3 +68,8 @@ export type GuestsInvited = {
     invitedBy: string;
     count: number;
 }
+
+export type GuestCount = {
+    time: string;
+    count: number;
+}

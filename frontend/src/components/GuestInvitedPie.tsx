@@ -25,7 +25,7 @@ export function GuestInvitedPie({ guestInvited }: { guestInvited: GuestsInvited[
     return (
         <Card className="flex flex-col">
             <CardHeader className="items-center pb-0">
-                <CardTitle>Number of guests invited</CardTitle>
+                <CardTitle>Number of Guests Invited</CardTitle>
             </CardHeader>
             
             <CardContent className="flex-1 pb-0">

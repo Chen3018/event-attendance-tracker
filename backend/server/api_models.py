@@ -68,3 +68,7 @@ class HomeContent(BaseModel):
 
 class CheckInRequest(BaseModel):
     name: str
+
+class GuestCount(BaseModel):
+    time: str
+    count: int
