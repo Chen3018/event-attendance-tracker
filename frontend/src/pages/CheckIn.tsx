@@ -97,11 +97,6 @@ export default function CheckIn() {
               <Button onClick={handleIncrementEntered} className="cursor-pointer">+1</Button>
             </div>
           </div>
-        
-          <CameraCanvas onCapture={handlePhoto} />
-          {imagePreview && (
-            <img src={imagePreview} alt="Captured"/>
-          )}
         </div>
         :
         <div className="text-3xl">No ongoing event.</div>
