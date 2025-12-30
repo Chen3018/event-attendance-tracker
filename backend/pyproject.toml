@@ -1,2 +1,2 @@
 [tool.fastapi]
-entrypoint = "server.main:app"
+app = "server.main:app"
