@@ -48,25 +48,29 @@ export default function Home() {
   }, []);
 
   return (
-      <div>
-        <h1 className="text-5xl font-extrabold py-2">Event Attendance Tracker</h1>
+      <div className="flex flex-col min-h-screen">
+        <div>
+          <h1 className="text-5xl font-extrabold py-2">Event Attendance Tracker</h1>
 
-        { events?.current_event ?
-          <div className="p-5">
-            <div className="text-3xl">Ongoing event: {events.current_event.name}</div>
-            <GuestCounter entered={events.current_event.guest_entered} left={events.current_event.guest_left} />
-            <div className="text-3xl">Time left</div>
-            <Countdown end_time={events.current_event.end_time} />
-          </div> 
-          :
-          events?.next_event ?
-          <div className="p-5">
-            <div className="text-3xl">Next event: {events.next_event.name}</div>
-            <Countdown end_time={events.next_event.end_time} />
-          </div>
-          :
-          <div className="text-3xl p-5">No events planned, create one in the Events page</div>
-        }
+          { events?.current_event ?
+            <div className="p-5">
+              <div className="text-3xl">Ongoing event: {events.current_event.name}</div>
+              <GuestCounter entered={events.current_event.guest_entered} left={events.current_event.guest_left} />
+              <div className="text-3xl">Time left</div>
+              <Countdown end_time={events.current_event.end_time} />
+            </div> 
+            :
+            events?.next_event ?
+            <div className="p-5">
+              <div className="text-3xl">Next event: {events.next_event.name}</div>
+              <Countdown end_time={events.next_event.end_time} />
+            </div>
+            :
+            <div className="text-3xl p-5">No events planned, create one in the Events page</div>
+          }
+        </div>
+
+        <div className="mt-auto">Recruiter version</div>
       </div>
   )
 }
