@@ -5,9 +5,9 @@ from sqlalchemy import Integer
 from dotenv import load_dotenv
 import os
 from PIL import Image
-import numpy as np
-import pytesseract
-import cv2
+#import numpy as np
+#import pytesseract
+#import cv2
 from datetime import datetime, timedelta
 
 import server.auth as auth
@@ -309,47 +309,47 @@ def check_in_guest(event_id: str, checkin_request: CheckInRequest, current_user:
         session.commit()
         return {"detail": f"Guest {name} checked in successfully"}
     
-@app.post("/checkin/id/{event_id}")
-def check_in_guest_by_id(event_id: str, id_photo: UploadFile = File(...), current_user: User = Depends(get_current_user)):
-    with Session(engine) as session:
-        event = session.get(Event, uuid.UUID(event_id))
-        if not event:
-            raise HTTPException(status_code=404, detail="Event not found")
+# @app.post("/checkin/id/{event_id}")
+# def check_in_guest_by_id(event_id: str, id_photo: UploadFile = File(...), current_user: User = Depends(get_current_user)):
+#     with Session(engine) as session:
+#         event = session.get(Event, uuid.UUID(event_id))
+#         if not event:
+#             raise HTTPException(status_code=404, detail="Event not found")
         
-        image = Image.open(id_photo.file)
+#         image = Image.open(id_photo.file)
 
-        image = np.array(image)
-        red_channel = image[:, :, 0]
-        _, image = cv2.threshold(red_channel, 160, 255, cv2.THRESH_BINARY)
-        text = pytesseract.image_to_string(image)
+#         image = np.array(image)
+#         red_channel = image[:, :, 0]
+#         _, image = cv2.threshold(red_channel, 160, 255, cv2.THRESH_BINARY)
+#         text = pytesseract.image_to_string(image)
 
-        lines = text.split("\n")
-        name = ""
-        if len(lines) > 0:
-            name = lines[0].strip()
+#         lines = text.split("\n")
+#         name = ""
+#         if len(lines) > 0:
+#             name = lines[0].strip()
         
-        guest = session.exec(
-            select(Guest)
-            .where(Guest.event_id == event.id, Guest.name == name)
-        ).first()
-        if not guest:
-            raise HTTPException(status_code=404, detail="Guest not found for this event")
+#         guest = session.exec(
+#             select(Guest)
+#             .where(Guest.event_id == event.id, Guest.name == name)
+#         ).first()
+#         if not guest:
+#             raise HTTPException(status_code=404, detail="Guest not found for this event")
         
-        if guest.checked_in:
-            raise HTTPException(status_code=400, detail="Guest already checked in")
+#         if guest.checked_in:
+#             raise HTTPException(status_code=400, detail="Guest already checked in")
         
-        guest.checked_in = True
-        event.guest_entered += 1
+#         guest.checked_in = True
+#         event.guest_entered += 1
 
-        log = AttendanceLog(
-            event_id=event.id,
-            delta=1,
-            timestamp=datetime.now()
-        )
-        session.add(log)
+#         log = AttendanceLog(
+#             event_id=event.id,
+#             delta=1,
+#             timestamp=datetime.now()
+#         )
+#         session.add(log)
 
-        session.commit()
-        return {"detail": f"Guest {name} checked in successfully"}
+#         session.commit()
+#         return {"detail": f"Guest {name} checked in successfully"}
     
 @app.post("/enter/{event_id}")
 def increment_guest_entered(event_id: str, current_user: User = Depends(get_current_user)):
