@@ -44,6 +44,7 @@ export function CreateEventCard( { updateEvents }: { updateEvents: () => void } 
     const [endTime, setEndTime] = useState<string>("01:00");
 
     const EST_TZ = 'America/New_York';
+    const startYear = new Date().getFullYear();
 
     function buildDateTime(date: Date, time: string): Date {
         const dateStr = date.toISOString().slice(0, 10);
@@ -130,7 +131,7 @@ export function CreateEventCard( { updateEvents }: { updateEvents: () => void } 
                                         </PopoverTrigger>
 
                                         <PopoverContent className="w-auto overflow-hidden p-0" align="start">
-                                            <Calendar mode="single" selected={date} captionLayout="dropdown" onSelect={(selectedDate) => {
+                                            <Calendar mode="single" selected={date} fromYear={startYear} toYear={startYear + 5} captionLayout="dropdown" onSelect={(selectedDate) => {
                                                 setDate(selectedDate || undefined);
                                                 setOpen(false);
                                             }} />
