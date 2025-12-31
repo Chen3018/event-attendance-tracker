@@ -63,7 +63,7 @@ export default function Home() {
             events?.next_event ?
             <div className="p-5">
               <div className="text-3xl">Next event: {events.next_event.name}</div>
-              <Countdown end_time={events.next_event.end_time} />
+              <Countdown end_time={events.next_event.start_time} />
             </div>
             :
             <div className="text-3xl p-5">No events planned, create one in the Events page</div>

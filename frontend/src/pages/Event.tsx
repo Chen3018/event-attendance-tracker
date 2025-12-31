@@ -37,7 +37,7 @@ export default function Event() {
   async function getList(id: string){
     apiFetch(`/event/${id}`).then(res => {
         setEvent(res);
-        // make guestinvited an array of {invitedBy: string, count: number}
+        
         const newGuestInvited: GuestsInvited[] = [];
         for (const guest of res.guestList) {
             const inviter = guest.invitedBy;

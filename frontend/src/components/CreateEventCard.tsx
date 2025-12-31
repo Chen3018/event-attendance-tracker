@@ -26,6 +26,8 @@ import { Calendar } from "@/components/ui/calendar"
 import { ChevronDownIcon } from "lucide-react"
 import { toast } from 'sonner'
 
+import { fromZonedTime } from 'date-fns-tz'
+
 import { useApi } from '@/hooks/api'
 import type { EventCreateRequest } from "@/lib/types";
 
@@ -41,6 +43,15 @@ export function CreateEventCard( { updateEvents }: { updateEvents: () => void } 
     const [startTime, setStartTime] = useState<string>("22:00");
     const [endTime, setEndTime] = useState<string>("01:00");
 
+    const EST_TZ = 'America/New_York';
+
+    function buildDateTime(date: Date, time: string): Date {
+        const dateStr = date.toISOString().slice(0, 10);
+        const localDateTime = new Date(`${dateStr}T${time}:00`);
+
+        return fromZonedTime(localDateTime, EST_TZ);
+    }
+
     async function handleCreateEvent() {
         if (eventName.trim() === "") {
             toast.error("Please enter an event name.");
@@ -53,16 +64,12 @@ export function CreateEventCard( { updateEvents }: { updateEvents: () => void } 
             return;
         }
 
-        const startDateTime = new Date(date);
-        const [startHours, startMinutes] = startTime.split(':').map(Number);
-        startDateTime.setHours(startHours, startMinutes, 0, 0);
+        const startDateTime = buildDateTime(date, startTime);
 
-        const endDateTime = new Date(date);
-        const [endHours, endMinutes] = endTime.split(':').map(Number);
-        if (endHours < startHours || (endHours === startHours && endMinutes <= startMinutes)) {
-            endDateTime.setDate(endDateTime.getDate() + 1);
+        let endDateTime = buildDateTime(date, endTime);
+        if (endDateTime <= startDateTime) {
+            endDateTime = new Date(endDateTime.getTime() + 24 * 60 * 60 * 1000);
         }
-        endDateTime.setHours(endHours, endMinutes, 0, 0);
 
         const newEvent: EventCreateRequest = {
             name: eventName,
