@@ -11,7 +11,7 @@ const BASE_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
   const { apiFetch } = useApi();
-  const { login, updateProfile } = useAuth();
+  const { isAuthenticated, login, updateProfile } = useAuth();
 
   const [events, setEvents] = useState<HomeContent | null>(null);
 
@@ -50,7 +50,10 @@ export default function Home() {
   }
 
   useEffect(() => {
-    recruiterLogin();
+    if (!isAuthenticated) {
+      recruiterLogin();
+    }
+    
     let interval: number | undefined;
     fetchHomeContent();
 
