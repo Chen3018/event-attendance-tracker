@@ -11,12 +11,16 @@ import { Button } from "./ui/button"
 
 import type { EventPreview } from "@/lib/types";
 
+import { formatInTimeZone } from "date-fns-tz";
+
 import { useNavigate } from "react-router-dom"
 
 export function EventPreviewCard({ event }: { event: EventPreview }) {
     const navigate = useNavigate();
+
+    const EST = 'America/New_York';
     const time = event.start_time;
-    const date = new Date(time).toLocaleDateString();
+    const date = formatInTimeZone(new Date(time), EST, 'MM/dd/yyyy');
 
     return (
         <Card className="w-full max-w-2xs hover:scale-105 transition-transform cursor-pointer" onClick={() => navigate(`/event/${event.id}`)}>

@@ -8,7 +8,8 @@ from PIL import Image
 #import numpy as np
 #import pytesseract
 #import cv2
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 
 import server.auth as auth
 from database.db import engine, init_db
@@ -113,10 +114,11 @@ def get_events_previews():
         current_event = None
         future_events = []
         past_events = []
+        now = datetime.now(timezone.utc)
         for event in events:
-            if event.start_time <= datetime.now() <= event.end_time:
+            if event.start_time <= now <= event.end_time:
                 current_event = event
-            elif event.start_time > datetime.now():
+            elif event.start_time > now:
                 future_events.append(event)
             else:
                 past_events.append(event)
@@ -203,6 +205,7 @@ def delete_guest(guest_id: str, current_user: User = Depends(get_current_user)):
 @app.get("/home", response_model=HomeContent)
 def get_home_content():
     with Session(engine) as session:
+        now = datetime.now(timezone.utc)
         current = session.exec(
             select(
                 Event.id,
@@ -213,8 +216,8 @@ def get_home_content():
                 Event.guest_left
             )
             .where(
-                Event.start_time <= datetime.now(),
-                Event.end_time >= datetime.now()
+                Event.start_time <= now,
+                Event.end_time >= now
             )
         ).first()
 
@@ -227,7 +230,7 @@ def get_home_content():
                 Event.guest_entered,
                 Event.guest_left
             )
-            .where(Event.start_time > datetime.now())
+            .where(Event.start_time > now)
             .order_by(Event.start_time)
         ).first()
 
@@ -302,7 +305,7 @@ def check_in_guest(event_id: str, checkin_request: CheckInRequest, current_user:
         log = AttendanceLog(
             event_id=event.id,
             delta=1,
-            timestamp=datetime.now()
+            timestamp=datetime.now(timezone.utc)
         )
         session.add(log)
 
@@ -363,7 +366,7 @@ def increment_guest_entered(event_id: str, current_user: User = Depends(get_curr
         log = AttendanceLog(
             event_id=event.id,
             delta=1,
-            timestamp=datetime.now()
+            timestamp=datetime.now(timezone.utc)
         )
         session.add(log)
 
@@ -385,13 +388,15 @@ def increment_guest_left(event_id: str, current_user: User = Depends(get_current
         log = AttendanceLog(
             event_id=event.id,
             delta=-1,
-            timestamp=datetime.now()
+            timestamp=datetime.now(timezone.utc)
         )
         session.add(log)
 
         session.commit()
         return {"detail": "Guest left count incremented successfully"}
         
+EST = ZoneInfo('America/New_York')
+
 @app.get("/attendance_log/{event_id}", response_model=list[GuestCount])
 def get_attendance_log(event_id: str):
     with Session(engine) as session:
@@ -402,11 +407,11 @@ def get_attendance_log(event_id: str):
         ).all()
 
         event = session.get(Event, uuid.UUID(event_id))
-        event_start = event.start_time if event else datetime.now()
-        event_end = event.end_time if event else datetime.now()
+        event_start = event.start_time if event else datetime.now(timezone.utc)
+        event_end = event.end_time if event else datetime.now(timezone.utc)
 
         current = 0
-        counts = [GuestCount(time=event_start.strftime("%H:%M"), count=0)]
+        counts = [GuestCount(time=event_start.astimezone(EST).strftime("%H:%M"), count=0)]
         # create counts every 5 min
         log_index = 0
         time_pointer = event_start
@@ -415,6 +420,6 @@ def get_attendance_log(event_id: str):
             while log_index < len(logs) and logs[log_index].timestamp <= time_pointer:
                 current += logs[log_index].delta
                 log_index += 1
-            counts.append(GuestCount(time=time_pointer.strftime("%H:%M"), count=current))
+            counts.append(GuestCount(time=time_pointer.astimezone(EST).strftime("%H:%M"), count=current))
 
         return counts
