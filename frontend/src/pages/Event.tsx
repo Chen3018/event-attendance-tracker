@@ -21,6 +21,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogCancel
+} from '@/components/ui/alert-dialog'
 
 import { useApi } from '@/hooks/api'
 import { useAuth } from '@/context/AuthContext'
@@ -179,7 +190,25 @@ export default function Event() {
           }
         </Sheet>
 
-        <Button className="cursor-pointer" size="lg" variant="destructive" onClick={handleDeleteEvent}>Delete event</Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="cursor-pointer" size="lg" variant="destructive">Delete event</Button>
+          </AlertDialogTrigger>
+
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure you want to delete this event?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. All guest data associated with this event will be permanently deleted.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteEvent}>Delete</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <div className='flex'>
