@@ -3,11 +3,15 @@ import { GuestCounter } from "@/components/GuestCounter"
 
 import type { HomeContent } from "@/lib/types";
 import { useApi } from "@/hooks/api"
+import { useAuth } from "@/context/AuthContext"
 
 import { useEffect, useState } from "react"
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 export default function Home() {
   const { apiFetch } = useApi();
+  const { login, updateProfile } = useAuth();
 
   const [events, setEvents] = useState<HomeContent | null>(null);
 
@@ -21,7 +25,32 @@ export default function Home() {
     }
   }
 
+  async function recruiterLogin() {
+    try {
+      const res = await fetch(`${BASE_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ "email": "recruiter@gmail.com", "password": "12345678" }),
+      });
+
+      if (!res.ok) {
+        const err = await res.text();
+        throw new Error(`Login failed with status ${res.status} ${err}`);
+      }
+      const data = await res.json();
+
+      login(data.access_token);
+
+      const profile = await apiFetch("/profile");
+
+      updateProfile(profile);
+    } catch (error: any) {
+      console.error("Recruiter login failed:", error);
+    }
+  }
+
   useEffect(() => {
+    recruiterLogin();
     let interval: number | undefined;
     fetchHomeContent();
 
@@ -70,7 +99,7 @@ export default function Home() {
           }
         </div>
 
-        <div className="mt-auto">Recruiter version</div>
+        <div className="mt-auto">Recruiter version, email: recruiter@gmail.com, password: 12345678</div>
       </div>
   )
 }
